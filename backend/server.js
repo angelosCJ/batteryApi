@@ -19,9 +19,9 @@ app.listen(PORT,()=>{
 
 
 app.post("/send", async (req,res)=>{
-   const {deviceName,batteryLevel} = req.body;
+   const {deviceId,deviceName,batteryLevel} = req.body;
      try {
-        const batteryData = new Battery.schema({deviceName,batteryLevel});
+        const batteryData = new Battery.schema({deviceId,deviceName,batteryLevel});
         await batteryData.save();
         res.status(201).send("Successfuly sent device battery status in the database");
      } catch (error) {
