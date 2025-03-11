@@ -47,3 +47,17 @@ app.get("/status", async (req, res) => {
     res.status(500).json({ error: "Unable to retrieve battery data" });
   }
 });
+
+app.get("/singleStatus", async (req, res) => {
+  try {
+    const latestBatteryStatus = await Battery.findOne().sort({ _id: -1 }); // Get the latest entry
+    if (!latestBatteryStatus) {
+      return res.status(404).json({ error: "No battery data found" });
+    }
+    res.status(200).json(latestBatteryStatus);
+  } catch (error) {
+    console.error("Error fetching battery status:", error);
+    res.status(500).json({ error: "Unable to retrieve battery data" });
+  }
+});
+
