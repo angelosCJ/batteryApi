@@ -61,3 +61,35 @@ app.get("/singleStatus", async (req, res) => {
   }
 });
 
+app.get("/allDeviceSingleStatus", async (req, res) => {
+  try {
+    const latestBatteryStatuses = await Battery.aggregate([
+      {
+        $sort: { _id: -1 } // Sort by most recent first
+      },
+      {
+        $group: {
+          _id: "$deviceId", // Group by deviceId
+          deviceId: { $first: "$deviceId" },
+          deviceName: { $first: "$deviceName" },
+          batteryLevel: { $first: "$batteryLevel" },
+          createdAt: { $first: "$createdAt" } // Assuming you have a timestamp
+        }
+      },
+      {
+        $sort: { createdAt: -1 } // Sort by timestamp (optional)
+      }
+    ]);
+
+    if (!latestBatteryStatuses.length) {
+      return res.status(404).json({ error: "No battery data found" });
+    }
+
+    res.status(200).json(latestBatteryStatuses);
+  } catch (error) {
+    console.error("Error fetching battery status:", error);
+    res.status(500).json({ error: "Unable to retrieve battery data" });
+  }
+});
+
+
